@@ -92,6 +92,10 @@ const Profile = () => {
     }
   });
   const avatar = watch('avatar');
+  
+  // Get the current avatar URL (prioritize form value over profile state)
+  const currentAvatarUrl = avatar || profileUser?.avatar || '';
+  
   useEffect(() => {
     if (profileUser) {
       setValue('name', profileUser.name || '');
@@ -104,24 +108,50 @@ const Profile = () => {
   }, [profileUser, setValue]);
 
   const handleAvatarUpload = async (file) => {
-    if (!file) return;
+    if (!file) {
+      console.log('No file provided to handleAvatarUpload');
+      return;
+    }
+    
+    console.log('Avatar upload started:', { fileName: file.name, fileSize: file.size });
     
     try {
+      setLoading(true);
       const res = await postService.uploadImage(file);
+      console.log('Upload response:', res.data);
+      
       const url = res.data?.data?.url; // Backend returns { success: true, data: { url, public_id } }
+      console.log('Extracted URL:', url);
+      
       if (url) {
+        // Update form value
         setValue('avatar', url, { shouldValidate: true });
+        console.log('Form value updated with:', url);
         
-        // Update the profileUser state immediately to show avatar
-        setProfileUser(prev => ({ ...prev, avatar: url }));
+        // Update profileUser state immediately to show avatar in both places
+        setProfileUser(prev => {
+          console.log('Updating profileUser avatar from:', prev.avatar, 'to:', url);
+          return { ...prev, avatar: url };
+        });
         
-        setSuccess('Avatar uploaded successfully!');
+        // Also update the auth context so the avatar shows globally
+        if (isSelf) {
+          const result = await updateProfile({ avatar: url });
+          console.log('Profile update result:', result);
+          if (result.success) {
+            setSuccess('Avatar uploaded and saved successfully!');
+          }
+        }
+        
       } else {
+        console.error('No URL in response:', res.data);
         setError('Failed to upload avatar');
       }
     } catch (err) {
       console.error('Avatar upload error:', err);
       setError('Failed to upload avatar: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -182,8 +212,8 @@ const Profile = () => {
             {isSelf ? (
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                  <Avatar src={avatar} alt="avatar" sx={{ width: 64, height: 64 }} />
-                  <ImageUpload single onChange={handleAvatarUpload} currentImage={avatar} />
+                  <Avatar src={currentAvatarUrl} alt="avatar" sx={{ width: 64, height: 64 }} />
+                  <ImageUpload single onChange={handleAvatarUpload} currentImage={currentAvatarUrl} />
                 </Box>
                 <TextField {...register('name')} fullWidth label="Full Name" margin="normal" error={!!errors.name} helperText={errors.name?.message} disabled={loading} />
                 <TextField {...register('bio')} fullWidth label="Bio" margin="normal" multiline rows={4} error={!!errors.bio} helperText={errors.bio?.message} disabled={loading} />
@@ -215,7 +245,7 @@ const Profile = () => {
         <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 4 }}>
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-              <Avatar src={profileUser.avatar} alt={profileUser.name} sx={{ width: 100, height: 100, mx: 'auto', mb: 2 }} />
+              <Avatar src={currentAvatarUrl} alt={profileUser.name} sx={{ width: 100, height: 100, mx: 'auto', mb: 2 }} />
               <Typography variant="h6" gutterBottom>{profileUser.name}</Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>{profileUser.email}</Typography>
               <Typography variant="body2" color="text.secondary">Role: {profileUser.role}</Typography>
