@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import ImageUpload from '../components/common/ImageUpload';
 import { useParams } from 'react-router-dom';
 import { getUserById, followUser, unfollowUser, getFollowers, getFollowing } from '../services/userService';
+import postService from '../services/postService';
 
 const schema = yup.object({
   name: yup.string().min(2, 'Name must be at least 2 characters').required('Name is required'),
@@ -102,8 +103,26 @@ const Profile = () => {
     }
   }, [profileUser, setValue]);
 
-  const handleAvatarChange = (url) => {
-    setValue('avatar', url, { shouldValidate: true });
+  const handleAvatarUpload = async (file) => {
+    if (!file) return;
+    
+    try {
+      const res = await postService.uploadImage(file);
+      const url = res.data?.data?.url; // Backend returns { success: true, data: { url, public_id } }
+      if (url) {
+        setValue('avatar', url, { shouldValidate: true });
+        
+        // Update the profileUser state immediately to show avatar
+        setProfileUser(prev => ({ ...prev, avatar: url }));
+        
+        setSuccess('Avatar uploaded successfully!');
+      } else {
+        setError('Failed to upload avatar');
+      }
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      setError('Failed to upload avatar: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   const onSubmit = async (data) => {
@@ -164,7 +183,7 @@ const Profile = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                   <Avatar src={avatar} alt="avatar" sx={{ width: 64, height: 64 }} />
-                  <ImageUpload onUpload={handleAvatarChange} currentImage={avatar} />
+                  <ImageUpload single onChange={handleAvatarUpload} currentImage={avatar} />
                 </Box>
                 <TextField {...register('name')} fullWidth label="Full Name" margin="normal" error={!!errors.name} helperText={errors.name?.message} disabled={loading} />
                 <TextField {...register('bio')} fullWidth label="Bio" margin="normal" multiline rows={4} error={!!errors.bio} helperText={errors.bio?.message} disabled={loading} />

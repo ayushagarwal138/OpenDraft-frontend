@@ -5,7 +5,7 @@ const pickBaseUrl = (raw, fallback) => {
   return s[0] || fallback;
 };
 
-let API_URL = pickBaseUrl(process.env.REACT_APP_API_URL,'http://localhost:5001/api');
+let API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'https://open-draft-backend-nine.vercel.app/api');
 // Normalize: remove trailing slashes and collapse duplicate slashes (preserving protocol)
 API_URL = API_URL.replace(/\/+$/, '').replace(/([^:]\/)\/+/, '$1');
 

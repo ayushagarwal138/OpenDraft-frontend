@@ -239,7 +239,7 @@ const CreatePost = () => {
         const file = item?.file || item; // item may be File or { file, preview, ... }
         if (file && file instanceof File) {
           const res = await postService.uploadImage(file);
-          const url = res.data?.url || res.data?.path || res.data?.location;
+          const url = res.data?.data?.url; // Backend returns { success: true, data: { url, public_id } }
           if (url) urls.push(url);
         }
       }
@@ -471,10 +471,8 @@ const CreatePost = () => {
                 Featured Images
               </Typography>
               <ImageUpload
-                onImageUpload={handleImageUpload}
-                multiple={true}
-                maxSize={5}
-                acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                onChange={handleImageUpload}
+                single={false}
               />
             </Grid>
 
