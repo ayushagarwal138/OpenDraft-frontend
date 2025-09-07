@@ -15,56 +15,75 @@ export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   const removeToast = useCallback((id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    if (typeof id !== 'undefined' && id !== null) {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }
   }, []);
 
   const addToast = useCallback((toast) => {
-    const id = Date.now() + Math.random();
-    const newToast = {
-      id,
-      ...toast,
-      open: true,
-    };
-    setToasts(prev => [...prev, newToast]);
-    
-    // Auto remove after duration
-    if (toast.autoHide !== false) {
-      setTimeout(() => {
-        removeToast(id);
-      }, toast.duration || 4000);
+    if (!toast || typeof toast !== 'object') {
+      console.warn('ToastProvider: Invalid toast object provided');
+      return;
+    }
+
+    try {
+      const id = Date.now() + Math.random();
+      const newToast = {
+        id,
+        ...toast,
+        open: true,
+      };
+      setToasts(prev => [...prev, newToast]);
+      
+      // Auto remove after duration
+      if (toast.autoHide !== false) {
+        setTimeout(() => {
+          removeToast(id);
+        }, toast.duration || 4000);
+      }
+    } catch (error) {
+      console.error('ToastProvider: Error adding toast:', error);
     }
   }, [removeToast]);
 
   const showSuccess = useCallback((message, options = {}) => {
-    addToast({
-      message,
-      type: 'success',
-      ...options,
-    });
+    if (typeof message === 'string' && message.trim()) {
+      addToast({
+        message,
+        type: 'success',
+        ...options,
+      });
+    }
   }, [addToast]);
 
   const showError = useCallback((message, options = {}) => {
-    addToast({
-      message,
-      type: 'error',
-      ...options,
-    });
+    if (typeof message === 'string' && message.trim()) {
+      addToast({
+        message,
+        type: 'error',
+        ...options,
+      });
+    }
   }, [addToast]);
 
   const showWarning = useCallback((message, options = {}) => {
-    addToast({
-      message,
-      type: 'warning',
-      ...options,
-    });
+    if (typeof message === 'string' && message.trim()) {
+      addToast({
+        message,
+        type: 'warning',
+        ...options,
+      });
+    }
   }, [addToast]);
 
   const showInfo = useCallback((message, options = {}) => {
-    addToast({
-      message,
-      type: 'info',
-      ...options,
-    });
+    if (typeof message === 'string' && message.trim()) {
+      addToast({
+        message,
+        type: 'info',
+        ...options,
+      });
+    }
   }, [addToast]);
 
   const clearAll = useCallback(() => {
