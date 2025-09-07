@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://open-draft-backend-swart.vercel.app/api/:path*"
+      "destination": "https://open-draft-backend-nine.vercel.app/api/:path*"
     },
     {
       "source": "/(.*)",
