@@ -67,13 +67,25 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         },
       }),
     ],
-    content: value,
     onUpdate: ({ editor }) => {
       if (onChange && editor) {
         onChange(editor.getHTML());
       }
     },
-  }, [value, onChange]);
+    editorProps: {
+      attributes: {
+        spellCheck: 'true',
+      },
+    },
+  });
+
+  // Set initial content only on mount
+  React.useEffect(() => {
+    if (editor && value && editor.getHTML() !== value) {
+      editor.commands.setContent(value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   if (!editor) {
     return <div>Loading editor...</div>;
