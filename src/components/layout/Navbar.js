@@ -273,6 +273,7 @@ const Navbar = () => {
                     {user?.name}
                   </Typography>
                   <Avatar
+                    src={user?.avatar}
                     onClick={handleProfileMenuOpen}
                     sx={{
                       width: 40,

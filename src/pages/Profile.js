@@ -136,7 +136,13 @@ const Profile = () => {
         
         // Also update the auth context so the avatar shows globally
         if (isSelf) {
-          const result = await updateProfile({ avatar: url });
+          // Update current user in auth context immediately
+          const currentUserData = {
+            ...profileUser,
+            avatar: url
+          };
+          
+          const result = await updateProfile(currentUserData);
           console.log('Profile update result:', result);
           if (result.success) {
             setSuccess('Avatar uploaded and saved successfully!');
