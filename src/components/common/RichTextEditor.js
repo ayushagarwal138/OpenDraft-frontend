@@ -55,10 +55,11 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
       Placeholder.configure({
         placeholder,
       }),
+      // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
       Table.configure({ resizable: true }),
       TableRow,
-      TableCell,
       TableHeader,
+      TableCell,
       Youtube.configure({
         width: 640,
         height: 360,
