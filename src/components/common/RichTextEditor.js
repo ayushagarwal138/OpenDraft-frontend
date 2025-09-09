@@ -121,30 +121,39 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
   };
 
   const addLink = () => {
-    if (!editor) return;
+    if (!editor || !editor.can().setLink) return;
     const url = window.prompt('Enter URL');
     if (url) {
-      editor.chain().focus().setLink({ href: url }).run();
+      try {
+        editor.chain().focus().setLink({ href: url }).run();
+      } catch (e) {}
     }
   };
 
   const addImage = () => {
-    if (!editor) return;
+    if (!editor || !editor.can().setImage) return;
     const url = window.prompt('Enter image URL');
     if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+      try {
+        editor.chain().focus().setImage({ src: url }).run();
+      } catch (e) {}
     }
   };
 
   const addTable = () => {
-    if (!editor) return;
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+    if (!editor || !editor.can().insertTable) return;
+    try {
+      editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+    } catch (e) {}
   };
+
   const addYoutube = () => {
-    if (!editor) return;
+    if (!editor || !editor.can().setYoutubeVideo) return;
     const url = window.prompt('Enter YouTube URL');
     if (url) {
-      editor.chain().focus().setYoutubeVideo({ src: url }).run();
+      try {
+        editor.chain().focus().setYoutubeVideo({ src: url }).run();
+      } catch (e) {}
     }
   };
 
@@ -161,21 +170,21 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* Text Formatting */}
         <IconButton
           size="small"
-          onClick={() => editor?.chain().focus().toggleBold().run()}
+          onClick={() => editor && editor.can().toggleBold && editor.chain().focus().toggleBold().run()}
           color={editor?.isActive('bold') ? 'primary' : 'default'}
         >
           <FormatBold />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor?.chain().focus().toggleItalic().run()}
+          onClick={() => editor && editor.can().toggleItalic && editor.chain().focus().toggleItalic().run()}
           color={editor?.isActive('italic') ? 'primary' : 'default'}
         >
           <FormatItalic />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor?.chain().focus().toggleStrike().run()}
+          onClick={() => editor && editor.can().toggleStrike && editor.chain().focus().toggleStrike().run()}
           color={editor?.isActive('strike') ? 'primary' : 'default'}
         >
           <FormatStrikethrough />
@@ -186,14 +195,14 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* Lists */}
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          onClick={() => editor && editor.can().toggleBulletList && editor.chain().focus().toggleBulletList().run()}
           color={editor.isActive('bulletList') ? 'primary' : 'default'}
         >
           <FormatListBulleted />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          onClick={() => editor && editor.can().toggleOrderedList && editor.chain().focus().toggleOrderedList().run()}
           color={editor.isActive('orderedList') ? 'primary' : 'default'}
         >
           <FormatListNumbered />
@@ -204,14 +213,14 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* Block Elements */}
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          onClick={() => editor && editor.can().toggleBlockquote && editor.chain().focus().toggleBlockquote().run()}
           color={editor.isActive('blockquote') ? 'primary' : 'default'}
         >
           <FormatQuote />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          onClick={() => editor && editor.can().toggleCodeBlock && editor.chain().focus().toggleCodeBlock().run()}
           color={editor.isActive('codeBlock') ? 'primary' : 'default'}
         >
           <Code />
@@ -247,15 +256,15 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* History */}
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
+          onClick={() => editor && editor.can().undo && editor.chain().focus().undo().run()}
+          disabled={!(editor && editor.can().undo && editor.can().undo())}
         >
           <Undo />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
+          onClick={() => editor && editor.can().redo && editor.chain().focus().redo().run()}
+          disabled={!(editor && editor.can().redo && editor.can().redo())}
         >
           <Redo />
         </IconButton>
@@ -265,7 +274,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* Clear */}
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().clearContent().run()}
+          onClick={() => editor && editor.can().clearContent && editor.chain().focus().clearContent().run()}
         >
           <Clear />
         </IconButton>
