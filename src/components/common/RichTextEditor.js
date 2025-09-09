@@ -47,64 +47,59 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
     return val;
   };
 
-  // Try/catch for editor initialization
-  let editor = null;
-  try {
-    editor = useEditor({
-      extensions: [
-        StarterKit.configure({
-          // Avoid duplicate Link extension: we'll use the explicitly configured Link below
-          link: false,
-        }),
-        Link.configure({
-          openOnClick: false,
-          HTMLAttributes: {
-            class: 'link',
-          },
-        }),
-        Image.configure({
-          HTMLAttributes: {
-            class: 'image',
-          },
-        }),
-        Placeholder.configure({
-          placeholder,
-        }),
-        // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
-        Table.configure({ resizable: true }),
-        TableRow,
-        TableHeader,
-        TableCell,
-        Youtube.configure({
-          width: 640,
-          height: 360,
-          HTMLAttributes: {
-            class: 'youtube-embed',
-          },
-        }),
-      ],
-      content: getSafeInitialContent(value),
-      onUpdate: ({ editor }) => {
-        if (onChange && editor) {
-          onChange(editor.getHTML());
-        }
-      },
-      editorProps: {
-        attributes: {
-          spellCheck: 'true',
+  // Always call useEditor unconditionally (React rule)
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        // Avoid duplicate Link extension: we'll use the explicitly configured Link below
+        link: false,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'link',
         },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'image',
+        },
+      }),
+      Placeholder.configure({
+        placeholder,
+      }),
+      // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Youtube.configure({
+        width: 640,
+        height: 360,
+        HTMLAttributes: {
+          class: 'youtube-embed',
+        },
+      }),
+    ],
+    content: getSafeInitialContent(value),
+    onUpdate: ({ editor }) => {
+      if (onChange && editor) {
+        onChange(editor.getHTML());
+      }
+    },
+    editorProps: {
+      attributes: {
+        spellCheck: 'true',
       },
-    });
-  } catch (e) {
-    // If TipTap throws, fallback to safe content and show error
-    if (!loadError) setLoadError(true);
-  }
+    },
+  });
 
   // Set initial content only on mount or when value changes, but always sanitize
   React.useEffect(() => {
     if (editor && value && editor.getHTML() !== value) {
       try {
         editor.commands.setContent(getSafeInitialContent(value));
+        setLoadError(false);
       } catch (e) {
         setLoadError(true);
       }
