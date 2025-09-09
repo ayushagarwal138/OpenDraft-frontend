@@ -35,6 +35,18 @@ import {
 const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story... (Markdown, tables, embeds supported!)" }) => {
   const theme = useTheme();
 
+  // Defensive: ensure value is always valid HTML for TipTap
+  const getSafeInitialContent = (val) => {
+    if (!val || typeof val !== 'string' || !val.trim() || val.trim() === '<br>' || val.trim() === '<p><br></p>') {
+      return '<p></p>';
+    }
+    // Basic check for valid HTML root
+    if (!val.trim().startsWith('<')) {
+      return `<p>${val}</p>`;
+    }
+    return val;
+  };
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -68,6 +80,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         },
       }),
     ],
+    content: getSafeInitialContent(value),
     onUpdate: ({ editor }) => {
       if (onChange && editor) {
         onChange(editor.getHTML());
@@ -80,13 +93,13 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
     },
   });
 
-  // Set initial content only on mount
+  // Set initial content only on mount or when value changes, but always sanitize
   React.useEffect(() => {
     if (editor && value && editor.getHTML() !== value) {
-      editor.commands.setContent(value);
+      editor.commands.setContent(getSafeInitialContent(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor]);
+  }, [editor, value]);
 
   if (!editor) {
     return <div>Loading editor...</div>;
