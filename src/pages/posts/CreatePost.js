@@ -180,8 +180,8 @@ const CreatePost = () => {
 
       const response = await postService.createPost(postData);
       clearSavedData(); // Clear auto-saved data after successful creation
-      showSuccess('Post created successfully!');
-      navigate(`/post/${response.data.data.slug}`);
+  showSuccess('Post created successfully!');
+  navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create post');
       showError(err.response?.data?.message || 'Failed to create post');
@@ -205,7 +205,8 @@ const CreatePost = () => {
       };
 
       await postService.createPost(data);
-      showSuccess('Draft saved successfully!');
+  showSuccess('Draft saved successfully!');
+  navigate('/');
     } catch (err) {
       showError('Failed to save draft');
     }
