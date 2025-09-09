@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -34,7 +34,7 @@ import {
 
 const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story... (Markdown, tables, embeds supported!)" }) => {
   const theme = useTheme();
-
+  const [loadError, setLoadError] = useState(false);
   // Defensive: ensure value is always valid HTML for TipTap
   const getSafeInitialContent = (val) => {
     if (!val || typeof val !== 'string' || !val.trim() || val.trim() === '<br>' || val.trim() === '<p><br></p>') {
@@ -47,60 +47,74 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
     return val;
   };
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        // Avoid duplicate Link extension: we'll use the explicitly configured Link below
-        link: false,
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'link',
-        },
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: 'image',
-        },
-      }),
-      Placeholder.configure({
-        placeholder,
-      }),
-      // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Youtube.configure({
-        width: 640,
-        height: 360,
-        HTMLAttributes: {
-          class: 'youtube-embed',
-        },
-      }),
-    ],
-    content: getSafeInitialContent(value),
-    onUpdate: ({ editor }) => {
-      if (onChange && editor) {
-        onChange(editor.getHTML());
-      }
-    },
-    editorProps: {
-      attributes: {
-        spellCheck: 'true',
+  // Try/catch for editor initialization
+  let editor = null;
+  try {
+    editor = useEditor({
+      extensions: [
+        StarterKit.configure({
+          // Avoid duplicate Link extension: we'll use the explicitly configured Link below
+          link: false,
+        }),
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'link',
+          },
+        }),
+        Image.configure({
+          HTMLAttributes: {
+            class: 'image',
+          },
+        }),
+        Placeholder.configure({
+          placeholder,
+        }),
+        // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
+        Table.configure({ resizable: true }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        Youtube.configure({
+          width: 640,
+          height: 360,
+          HTMLAttributes: {
+            class: 'youtube-embed',
+          },
+        }),
+      ],
+      content: getSafeInitialContent(value),
+      onUpdate: ({ editor }) => {
+        if (onChange && editor) {
+          onChange(editor.getHTML());
+        }
       },
-    },
-  });
+      editorProps: {
+        attributes: {
+          spellCheck: 'true',
+        },
+      },
+    });
+  } catch (e) {
+    // If TipTap throws, fallback to safe content and show error
+    if (!loadError) setLoadError(true);
+  }
 
   // Set initial content only on mount or when value changes, but always sanitize
   React.useEffect(() => {
     if (editor && value && editor.getHTML() !== value) {
-      editor.commands.setContent(getSafeInitialContent(value));
+      try {
+        editor.commands.setContent(getSafeInitialContent(value));
+      } catch (e) {
+        setLoadError(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, value]);
 
+  if (loadError) {
+    return <div style={{ color: 'red', padding: 16 }}>Editor failed to load due to invalid content. Please clear or fix the post content HTML.</div>;
+  }
   if (!editor) {
     return <div>Loading editor...</div>;
   }
