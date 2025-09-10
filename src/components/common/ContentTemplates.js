@@ -1,3 +1,4 @@
+import sanitizeHtml from './sanitizeHtml';
 import React, { useState } from 'react';
 import {
   Box,
@@ -420,7 +421,7 @@ your-code-here</code></pre>
                 {selectedTemplate.content.excerpt}
               </Typography>
               <Box 
-                dangerouslySetInnerHTML={{ __html: selectedTemplate.content.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedTemplate.content.content) }}
                 sx={{
                   '& h2': { mt: 3, mb: 2, color: 'primary.main' },
                   '& h3': { mt: 2, mb: 1, color: 'text.primary' },
