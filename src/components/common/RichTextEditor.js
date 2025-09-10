@@ -48,10 +48,20 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
   };
 
   // Always call useEditor unconditionally (React rule)
+  // Defensive: log initial content and check for table structure
+  const initialContent = getSafeInitialContent(value);
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('[RichTextEditor] Initial content for TipTap:', initialContent);
+    if (/<table/i.test(initialContent)) {
+      // eslint-disable-next-line no-console
+      console.warn('[RichTextEditor] Table markup detected in initial content.');
+    }
+  }
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        // Avoid duplicate Link extension: we'll use the explicitly configured Link below
         link: false,
       }),
       Link.configure({
@@ -68,11 +78,15 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
       Placeholder.configure({
         placeholder,
       }),
-      // Table extensions must be in this order: Table, TableRow, TableHeader, TableCell
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
+      // Defensive: Only add Table extensions if no table markup is present
+      ...(!/<table/i.test(initialContent)
+        ? [
+            Table.configure({ resizable: true }),
+            TableRow,
+            TableHeader,
+            TableCell,
+          ]
+        : []),
       Youtube.configure({
         width: 640,
         height: 360,
@@ -81,7 +95,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         },
       }),
     ],
-    content: getSafeInitialContent(value),
+    content: initialContent,
     onUpdate: ({ editor }) => {
       if (onChange && editor) {
         onChange(editor.getHTML());
