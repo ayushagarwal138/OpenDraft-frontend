@@ -175,9 +175,9 @@ const PostDetail = () => {
     try {
       let response;
       if (add) {
-        response = await postService.reactToPost(post._id, emoji);
+        response = await postService.reactToPost(postId, emoji);
       } else {
-        response = await postService.unreactToPost(post._id, emoji);
+        response = await postService.unreactToPost(postId, emoji);
       }
       setPost(prev => ({ ...prev, reactions: response.data.reactions }));
     } catch (err) {
