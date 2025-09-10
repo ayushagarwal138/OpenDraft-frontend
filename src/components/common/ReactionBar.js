@@ -10,7 +10,7 @@ const ReactionBar = ({ type, id, reactions = {}, onReact, userId, disabled }) =>
   const handleReact = (emoji) => {
     if (disabled) return;
     const userReacted = didUserReact(reactions[emoji]);
-    onReact && onReact(emoji, !userReacted);
+    onReact && onReact(emoji, !userReacted, id);
   };
 
   return (

@@ -167,7 +167,7 @@ const PostDetail = () => {
   };
 
   // Reaction handlers for post
-  const handlePostReact = async (emoji, add) => {
+  const handlePostReact = async (emoji, add, postId) => {
     if (!isAuthenticated) {
       setError('Please login to react to posts');
       return;
@@ -186,7 +186,7 @@ const PostDetail = () => {
   };
 
   // Reaction handlers for comments
-  const handleCommentReact = async (commentId, emoji, add) => {
+  const handleCommentReact = async (emoji, add, commentId) => {
     if (!isAuthenticated) {
       setError('Please login to react to comments');
       return;
@@ -279,7 +279,7 @@ const PostDetail = () => {
                 type="comment"
                 id={comment._id}
                 reactions={comment.reactions || {}}
-                onReact={(emoji, add) => handleCommentReact(comment._id, emoji, add)}
+                onReact={(emoji, add) => handleCommentReact(emoji, add, comment._id)}
                 userId={user?._id}
                 disabled={!isAuthenticated}
               />
@@ -514,7 +514,7 @@ const PostDetail = () => {
           type="post"
           id={post._id}
           reactions={post.reactions || {}}
-          onReact={handlePostReact}
+          onReact={(emoji, add) => handlePostReact(emoji, add, post._id)}
           userId={user?._id}
           disabled={!isAuthenticated}
         />
