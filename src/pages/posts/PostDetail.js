@@ -279,7 +279,7 @@ const PostDetail = () => {
                 type="comment"
                 id={comment._id}
                 reactions={comment.reactions || {}}
-                onReact={(emoji, add) => handleCommentReact(emoji, add, comment._id)}
+                onReact={(emoji, add, id) => handleCommentReact(emoji, add, id)}
                 userId={user?._id}
                 disabled={!isAuthenticated}
               />
@@ -514,7 +514,7 @@ const PostDetail = () => {
           type="post"
           id={post._id}
           reactions={post.reactions || {}}
-          onReact={(emoji, add) => handlePostReact(emoji, add, post._id)}
+          onReact={(emoji, add, id) => handlePostReact(emoji, add, id)}
           userId={user?._id}
           disabled={!isAuthenticated}
         />
