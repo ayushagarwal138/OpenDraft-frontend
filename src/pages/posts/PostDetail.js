@@ -175,12 +175,13 @@ const PostDetail = () => {
     try {
       let response;
       if (add) {
-        response = await postService.reactToPost(postId, emoji);
+        response = await postService.reactToPost(post._id, emoji);
       } else {
-        response = await postService.unreactToPost(postId, emoji);
+        response = await postService.unreactToPost(post._id, emoji);
       }
       setPost(prev => ({ ...prev, reactions: response.data.reactions }));
     } catch (err) {
+      console.error('Reaction error:', err);
       setError('Failed to update reaction');
     }
   };
