@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
+import sanitizeHtml from '../../lib/sanitizeHtml';
 
 const pickBaseUrl = (raw, fallback) => {
   const s = (raw || fallback || '').split(/[ ,]+/).filter(Boolean);
@@ -500,7 +501,7 @@ const PostDetail = () => {
       {/* Post Content */}
       <Box sx={{ mb: 4 }}>
         <div
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           style={{
             lineHeight: 1.8,
             fontSize: '1.1rem'
