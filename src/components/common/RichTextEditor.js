@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import sanitizeHtml from './sanitizeHtml';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -41,10 +42,9 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
       return '<p></p>';
     }
     // Basic check for valid HTML root
-    if (!val.trim().startsWith('<')) {
-      return `<p>${val}</p>`;
-    }
-    return val;
+    let html = val.trim().startsWith('<') ? val : `<p>${val}</p>`;
+    // Sanitize before passing to TipTap
+    return sanitizeHtml(html);
   };
 
   // Always call useEditor unconditionally (React rule)
