@@ -194,9 +194,9 @@ const PostDetail = () => {
     try {
       let response;
       if (add) {
-        response = await commentService.reactToComment(commentId, emoji);
+        response = await commentService.addReactionToComment(commentId, emoji);
       } else {
-        response = await commentService.unreactToComment(commentId, emoji);
+        response = await commentService.removeReactionFromComment(commentId, emoji);
       }
       setComments(prev => prev.map(c => c._id === commentId ? { ...c, reactions: response.data.reactions } : c));
     } catch (err) {
@@ -595,4 +595,4 @@ const PostDetail = () => {
   );
 };
 
-export default PostDetail; 
+export default PostDetail;
