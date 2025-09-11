@@ -27,7 +27,7 @@ const commentService = {
     return response;
   },
   createComment: async (postId, data) => {
-    const response = await api.post(`/comments/${postId}`, data);
+    const response = await api.post(`/comments/post/${postId}`, data);
     return response;
   },
   deleteComment: async (commentId) => {
