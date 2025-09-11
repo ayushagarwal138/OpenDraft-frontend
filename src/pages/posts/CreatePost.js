@@ -83,6 +83,9 @@ const CreatePost = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      title: '',
+      content: '',
+      excerpt: '',
       status: 'draft',
       category: 'General'
     }
@@ -377,34 +380,48 @@ const CreatePost = () => {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={!!errors.category}>
                 <InputLabel>Category</InputLabel>
-                <Select
-                  {...register('category')}
-                  label="Category"
-                  disabled={loading}
-                >
-                  <MenuItem value="General">General</MenuItem>
-                  <MenuItem value="Technology">Technology</MenuItem>
-                  <MenuItem value="Lifestyle">Lifestyle</MenuItem>
-                  <MenuItem value="Travel">Travel</MenuItem>
-                  <MenuItem value="Food">Food</MenuItem>
-                  <MenuItem value="Health">Health</MenuItem>
-                  <MenuItem value="Business">Business</MenuItem>
-                  <MenuItem value="Education">Education</MenuItem>
-                </Select>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value ?? 'General'}
+                      label="Category"
+                      disabled={loading}
+                    >
+                      <MenuItem value="General">General</MenuItem>
+                      <MenuItem value="Technology">Technology</MenuItem>
+                      <MenuItem value="Lifestyle">Lifestyle</MenuItem>
+                      <MenuItem value="Travel">Travel</MenuItem>
+                      <MenuItem value="Food">Food</MenuItem>
+                      <MenuItem value="Health">Health</MenuItem>
+                      <MenuItem value="Business">Business</MenuItem>
+                      <MenuItem value="Education">Education</MenuItem>
+                    </Select>
+                  )}
+                />
               </FormControl>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={!!errors.status}>
                 <InputLabel>Status</InputLabel>
-                <Select
-                  {...register('status')}
-                  label="Status"
-                  disabled={loading}
-                >
-                  <MenuItem value="draft">Draft</MenuItem>
-                  <MenuItem value="published">Published</MenuItem>
-                </Select>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value ?? 'draft'}
+                      label="Status"
+                      disabled={loading}
+                    >
+                      <MenuItem value="draft">Draft</MenuItem>
+                      <MenuItem value="published">Published</MenuItem>
+                    </Select>
+                  )}
+                />
               </FormControl>
             </Grid>
 
@@ -486,7 +503,7 @@ const CreatePost = () => {
                 control={control}
                 render={({ field }) => (
                   <RichTextEditor
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={(value) => {
                       field.onChange(value);
                       setContent(value);

@@ -46,7 +46,14 @@ const EditPost = () => {
     reset,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
+    defaultValues: {
+      title: '',
+      content: '',
+      excerpt: '',
+      category: 'General',
+      status: 'draft'
+    }
   });
 
   const fetchPost = useCallback(async () => {
@@ -152,35 +159,49 @@ const EditPost = () => {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={!!errors.category}>
                 <InputLabel>Category</InputLabel>
-                <Select
-                  {...register('category')}
-                  label="Category"
-                  disabled={saving}
-                >
-                  <MenuItem value="General">General</MenuItem>
-                  <MenuItem value="Technology">Technology</MenuItem>
-                  <MenuItem value="Lifestyle">Lifestyle</MenuItem>
-                  <MenuItem value="Travel">Travel</MenuItem>
-                  <MenuItem value="Food">Food</MenuItem>
-                  <MenuItem value="Health">Health</MenuItem>
-                  <MenuItem value="Business">Business</MenuItem>
-                  <MenuItem value="Education">Education</MenuItem>
-                </Select>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value ?? 'General'}
+                      label="Category"
+                      disabled={saving}
+                    >
+                      <MenuItem value="General">General</MenuItem>
+                      <MenuItem value="Technology">Technology</MenuItem>
+                      <MenuItem value="Lifestyle">Lifestyle</MenuItem>
+                      <MenuItem value="Travel">Travel</MenuItem>
+                      <MenuItem value="Food">Food</MenuItem>
+                      <MenuItem value="Health">Health</MenuItem>
+                      <MenuItem value="Business">Business</MenuItem>
+                      <MenuItem value="Education">Education</MenuItem>
+                    </Select>
+                  )}
+                />
               </FormControl>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={!!errors.status}>
                 <InputLabel>Status</InputLabel>
-                <Select
-                  {...register('status')}
-                  label="Status"
-                  disabled={saving}
-                >
-                  <MenuItem value="draft">Draft</MenuItem>
-                  <MenuItem value="published">Published</MenuItem>
-                  <MenuItem value="archived">Archived</MenuItem>
-                </Select>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value ?? 'draft'}
+                      label="Status"
+                      disabled={saving}
+                    >
+                      <MenuItem value="draft">Draft</MenuItem>
+                      <MenuItem value="published">Published</MenuItem>
+                      <MenuItem value="archived">Archived</MenuItem>
+                    </Select>
+                  )}
+                />
               </FormControl>
             </Grid>
 
@@ -239,7 +260,7 @@ const EditPost = () => {
                 control={control}
                 render={({ field }) => (
                   <RichTextEditor
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={field.onChange}
                     placeholder="Write your post content here..."
                   />

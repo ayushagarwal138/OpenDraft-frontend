@@ -352,6 +352,8 @@ const PostDetail = () => {
     );
   }
 
+  const mainImage = post.featuredImage || (Array.isArray(post.images) ? post.images[0] : undefined);
+
   return (
     <>
       <Helmet>
@@ -362,7 +364,7 @@ const PostDetail = () => {
         <meta property="og:description" content={post.excerpt || post.title} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={window.location.href} />
-        {post.featuredImage && (
+        {mainImage && (
           <meta property="og:image" content={post.featuredImage} />
         )}
         <meta property="og:site_name" content="OpenDraft" />
@@ -370,8 +372,8 @@ const PostDetail = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt || post.title} />
-        {post.featuredImage && (
-          <meta name="twitter:image" content={post.featuredImage} />
+        {mainImage && (
+          <meta name="twitter:image" content={mainImage} />
         )}
         {post.author?.name && (
           <meta name="author" content={post.author.name} />
@@ -459,10 +461,10 @@ const PostDetail = () => {
         )}
 
         {/* Featured Image */}
-        {post.featuredImage && (
+        {mainImage && (
           <Box sx={{ mb: 4 }}>
             <img
-              src={post.featuredImage}
+              src={mainImage}
               alt={post.title}
               style={{
                 width: '100%',
